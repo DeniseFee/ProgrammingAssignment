@@ -13,4 +13,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProgrammingAssignment.Application\ProgrammingAssignment.Application.csproj" />
+    <ProjectReference Include="..\ProgrammingAssignment.Domain\ProgrammingAssignment.Domain.csproj" />
+    <ProjectReference Include="..\ProgrammingAssignment.Infra.FundaPartnerApi\ProgrammingAssignment.Infra.FundaPartnerApi.csproj" />
+    <ProjectReference Include="..\ProgrammingAssignment.Infra.Persistence\ProgrammingAssignment.Infra.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

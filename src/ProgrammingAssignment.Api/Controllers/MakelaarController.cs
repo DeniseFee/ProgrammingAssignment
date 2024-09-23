@@ -1,18 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
+using ProgrammingAssignment.Application.Makelaars;
 
 namespace ProgrammingAssignment.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MakelaarController(ILogger<MakelaarController> logger) : ControllerBase
+    public class MakelaarController(IMakelaarService makelaarService) : ControllerBase
     {
-        private readonly ILogger<MakelaarController> _logger = logger;
 
         [HttpPost(Name = "ProcessMakelaarsTopList")]
-        public IEnumerable<Makelaar> ProcessMakelaarsTopList()
+        public async Task<IActionResult> ProcessMakelaarsTopListAsync()
         {
-            _logger.LogInformation("MakelaarController.ProcessMakelaarsTopList");
-            throw new NotImplementedException();
+            try
+            {
+                var topList = await makelaarService.ProcessMakelaarsTopListAsync();
+                return Ok(topList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Er is een fout opgetreden: {ex.Message}");
+            }
         }
     }
 }
