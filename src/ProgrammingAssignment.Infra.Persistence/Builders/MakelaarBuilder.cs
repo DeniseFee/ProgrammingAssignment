@@ -8,8 +8,7 @@ namespace ProgrammingAssignment.Infra.Persistence.Builders
     {
         public void Configure(EntityTypeBuilder<Makelaar> builder)
         {
-            // Todo: fix intern id
-            builder.HasKey(u => u.FundaId);
+            builder.HasKey(u => u.Id);
         }
     }
 }
