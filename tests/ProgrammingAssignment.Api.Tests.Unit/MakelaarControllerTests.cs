@@ -28,10 +28,10 @@ namespace ProgrammingAssignment.Api.Tests.Unit
                 new() { FundaId = 2, Naam = "Makelaar2" }
             };
 
-            _makelaarService.ProcessMakelaarsTopListAsync().Returns(Task.FromResult(makelaarDtoList));
+            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult(makelaarDtoList));
 
             // Act
-            var result = await _controller.ProcessMakelaarsTopListAsync();
+            var result = await _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>());
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -43,10 +43,10 @@ namespace ProgrammingAssignment.Api.Tests.Unit
         public async Task ProcessMakelaarsTopListAsync_WithNullTopList_ReturnsOkResult()
         {
             // Arrange
-            _makelaarService.ProcessMakelaarsTopListAsync().Returns(Task.FromResult<List<Makelaar>>(null));
+            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult<List<Makelaar>>(null));
 
             // Act
-            var result = await _controller.ProcessMakelaarsTopListAsync();
+            var result = await _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>());
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -58,10 +58,10 @@ namespace ProgrammingAssignment.Api.Tests.Unit
         public async void ProcessMakelaarsTopListAsync_WithException_ThrowsNotImplementedException()
         {
             // Arrange
-            _makelaarService.ProcessMakelaarsTopListAsync().Throws(new Exception("Service error"));
+            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Throws(new Exception("Service error"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotImplementedException>(() => _controller.ProcessMakelaarsTopListAsync());
+            await Assert.ThrowsAsync<NotImplementedException>(() => _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>()));
         }
     }
 }
