@@ -1,15 +1,21 @@
-﻿using ProgrammingAssignment.Application.Woningen;
+﻿using Microsoft.Extensions.Configuration;
+using ProgrammingAssignment.Application.Woningen;
+using ProgrammingAssignment.Infra.FundaPartnerApi.Client;
 using Refit;
 
 namespace ProgrammingAssignment.Infra.FundaPartnerApi;
 
-public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi) : IKoopwoningenService
+public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguration configuration) : IKoopwoningenService
 {
+    private readonly IFundaPartnerApi _fundaPartnerApi = fundaPartnerApi;
+    private readonly IConfiguration _configuration = configuration;
+
     public async Task<List<WoningDto>> GetKoopwoningenVoorPlaatsAsync(string plaats)
     {
+        var apiKey = _configuration["PartnerApiKey"] ?? throw new InvalidOperationException("PartnerApiKey");
         try
         {
-            return await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync(plaats);
+            return await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync(apiKey, plaats);
         }
         catch (ApiException ex)
         {

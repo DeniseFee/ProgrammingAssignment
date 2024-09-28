@@ -1,12 +1,12 @@
 ﻿using ProgrammingAssignment.Application.Woningen;
 using Refit;
 
-namespace ProgrammingAssignment.Infra.FundaPartnerApi
+namespace ProgrammingAssignment.Infra.FundaPartnerApi.Client
 {
     public interface IFundaPartnerApi
     {
-        [Get("/{plaats}")]
-        Task<List<WoningDto>> GetKoopwoningenVoorPlaatsAsync(string plaats);
+        [Get("/{apiKey}/?type=koop&zo=/{plaats}")]
+        Task<List<WoningDto>> GetKoopwoningenVoorPlaatsAsync(string apiKey, string plaats);
 
         [Get("/{plaats}/tuin")]
         Task<List<WoningDto>> GetKoopwoningenVoorPlaatsMetTuinAsync(string plaats);

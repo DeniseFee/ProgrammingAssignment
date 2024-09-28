@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry();
 
-builder.Services.AddFundaPartnerApiServices(builder.Configuration);
+builder.Services.AddFundaPartnerApiServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
 
