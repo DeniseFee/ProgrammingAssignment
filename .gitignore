@@ -112,3 +112,4 @@ wwwroot/
 # Log files
 *.log
 /src/ProgrammingAssignment.Api/appsettings.Local.json
+/qodana.yaml
