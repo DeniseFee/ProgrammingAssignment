@@ -1,67 +1,130 @@
+using System.Net;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using ProgrammingAssignment.Api.Controllers;
 using ProgrammingAssignment.Application.Makelaars;
-using ProgrammingAssignment.Domain.Makelaar;
+using Refit;
 
-namespace ProgrammingAssignment.Api.Tests.Unit
+namespace ProgrammingAssignment.Api.Tests.Unit;
+
+public class MakelaarControllerTests
 {
-    public class MakelaarControllerTests
+    private readonly MakelaarController _controller;
+    private readonly IMakelaarService _mockMakelaarService;
+
+    public MakelaarControllerTests()
     {
-        private readonly IMakelaarService _makelaarService;
-        private readonly MakelaarController _controller;
+        _mockMakelaarService = Substitute.For<IMakelaarService>();
+        _controller = new MakelaarController(_mockMakelaarService);
+    }
 
-        public MakelaarControllerTests()
-        {
-            _makelaarService = Substitute.For<IMakelaarService>();
-            _controller = new MakelaarController(_makelaarService);
-        }
+    [Fact]
+    public async Task ProcessMakelaarsTopListAsync_ReturnsOk_WhenServiceReturnsTopList()
+    {
+        // Arrange
+        var place = "Amsterdam";
+        var expectedTopList = new List<MakelaarDto>
+            { new() { FundaId = 1234, Naam = "Makelaar1" }, new() { FundaId = 4321, Naam = "Makelaar2" } };
+        _mockMakelaarService.ProcessMakelaarsTopListAsync(place).Returns(expectedTopList);
 
-        [Fact]
-        public async void ProcessMakelaarsTopListAsync_WithValidList_ReturnsOkResult()
-        {
-            // Arrange
-            var makelaarDtoList = new List<MakelaarDto>
-            {
-                new() { FundaId = 1, Naam= "Makelaar1" },
-                new() { FundaId = 2, Naam = "Makelaar2" }
-            };
+        // Act
+        var result = await _controller.ProcessMakelaarsTopListAsync(place);
 
-            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult(makelaarDtoList));
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult?.StatusCode.Should().Be(200);
+        okResult?.Value.Should().Be(expectedTopList);
+    }
 
-            // Act
-            var result = await _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>());
+    [Fact]
+    public async Task ProcessMakelaarsTopListAsync_ReturnsNotFound_WhenApiExceptionWithNotFoundIsThrown()
+    {
+        // Arrange
+        var place = "NonExistentPlace";
+        var apiException = await ApiException.Create(
+            new HttpRequestMessage(HttpMethod.Get, "http://localhost"),
+            HttpMethod.Get,
+            new HttpResponseMessage(HttpStatusCode.NotFound),
+            new RefitSettings());
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(makelaarDtoList, okResult.Value);
-        }
+        _mockMakelaarService.ProcessMakelaarsTopListAsync(place).Throws(apiException);
 
-        [Fact]
-        public async Task ProcessMakelaarsTopListAsync_WithNullTopList_ReturnsOkResult()
-        {
-            // Arrange
-            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult<List<MakelaarDto>>(null));
+        // Act
+        var result = await _controller.ProcessMakelaarsTopListAsync(place);
 
-            // Act
-            var result = await _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>());
+        // Assert
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult?.StatusCode.Should().Be(404);
+        notFoundResult?.Value.Should().BeEquivalentTo(new { message = "Geen woningen gevonden voor deze locatie." });
+    }
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Null(okResult.Value);
-        }
+    [Fact]
+    public async Task ProcessMakelaarsTopListAsync_ReturnsTooManyRequests_WhenApiExceptionWithTooManyRequestsIsThrown()
+    {
+        // Arrange
+        var place = "Amsterdam";
+        var apiException = await ApiException.Create(
+            new HttpRequestMessage(HttpMethod.Get, "http://localhost"),
+            HttpMethod.Get,
+            new HttpResponseMessage(HttpStatusCode.TooManyRequests),
+            new RefitSettings());
+        _mockMakelaarService.ProcessMakelaarsTopListAsync(place).Throws(apiException);
 
-        [Fact]
-        public async void ProcessMakelaarsTopListAsync_WithException_ThrowsNotImplementedException()
-        {
-            // Arrange
-            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Throws(new Exception("Service error"));
+        // Act
+        var result = await _controller.ProcessMakelaarsTopListAsync(place);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<NotImplementedException>(() => _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>()));
-        }
+        // Assert
+        var tooManyRequestsResult = result as ObjectResult;
+        tooManyRequestsResult.Should().NotBeNull();
+        tooManyRequestsResult?.StatusCode.Should().Be(429);
+        tooManyRequestsResult?.Value.Should()
+            .BeEquivalentTo(new { message = "Te veel aanvragen. Probeer het later opnieuw." });
+    }
+
+    [Fact]
+    public async Task
+        ProcessMakelaarsTopListAsync_ReturnsInternalServerError_WhenApiExceptionWithOtherStatusCodeIsThrown()
+    {
+        // Arrange
+        var place = "Amsterdam";
+        var apiException = await ApiException.Create(
+            new HttpRequestMessage(HttpMethod.Get, "http://localhost"),
+            HttpMethod.Get,
+            new HttpResponseMessage(HttpStatusCode.BadRequest),
+            new RefitSettings());
+        _mockMakelaarService.ProcessMakelaarsTopListAsync(place).Throws(apiException);
+
+        // Act
+        var result = await _controller.ProcessMakelaarsTopListAsync(place);
+
+        // Assert
+        var internalServerErrorResult = result as ObjectResult;
+        internalServerErrorResult.Should().NotBeNull();
+        internalServerErrorResult?.StatusCode.Should().Be(500);
+        internalServerErrorResult?.Value.Should()
+            .BeEquivalentTo(new { message = "Er ging iets mis bij het ophalen van de woningen." });
+    }
+
+    [Fact]
+    public async Task ProcessMakelaarsTopListAsync_ReturnsInternalServerError_WhenUnexpectedExceptionIsThrown()
+    {
+        // Arrange
+        var place = "Amsterdam";
+        var exceptionMessage = "Unexpected error!";
+        _mockMakelaarService.ProcessMakelaarsTopListAsync(place).Throws(new Exception(exceptionMessage));
+
+        // Act
+        var result = await _controller.ProcessMakelaarsTopListAsync(place);
+
+        // Assert
+        var internalServerErrorResult = result as ObjectResult;
+        internalServerErrorResult.Should().NotBeNull();
+        internalServerErrorResult?.StatusCode.Should().Be(500);
+        internalServerErrorResult?.Value.Should().BeEquivalentTo(new
+            { message = $"Er is een interne fout opgetreden: {exceptionMessage}." });
     }
 }
