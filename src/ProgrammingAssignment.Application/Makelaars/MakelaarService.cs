@@ -15,8 +15,21 @@ public class MakelaarService(
     {
         logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats {Plaats}", plaats);
 
-        var alleWoningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsAsync(plaats);
-        var teKoopWoningen = alleWoningen.Where(w => w.IsTeKoop);
+        var woningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsAsync(plaats);
+        return await ProcessTopListAsync(woningen);
+    }
+    
+    public async Task<List<MakelaarDto>> ProcessMakelaarsTopListWithTuinAsync(string plaats)
+    {
+        logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats met tuin {Plaats}", plaats);
+
+        var woningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsMetTuinAsync(plaats);
+        return await ProcessTopListAsync(woningen);
+    }
+
+    private async Task<List<MakelaarDto>> ProcessTopListAsync(List<WoningDto> woningen)
+    {
+        var teKoopWoningen = woningen.Where(w => w.IsTeKoop);
 
         var topMakelaarList = GetTopMakelaarLijst(teKoopWoningen);
 

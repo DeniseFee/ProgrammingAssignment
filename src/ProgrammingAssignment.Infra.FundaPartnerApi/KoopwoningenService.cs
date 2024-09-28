@@ -9,25 +9,28 @@ using Refit;
 
 namespace ProgrammingAssignment.Infra.FundaPartnerApi;
 
-public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguration configuration, IMapper mapper, ILogger<KoopwoningenService> logger)
+public class KoopwoningenService(
+    IFundaPartnerApi fundaPartnerApi,
+    IConfiguration configuration,
+    IMapper mapper,
+    ILogger<KoopwoningenService> logger)
     : IKoopwoningenService
 {
+    private readonly string _apiKey = configuration["PartnerApiKey"] ?? throw new InvalidOperationException("API key not found in configuration.");
     private readonly TimeSpan _initialRetryDelay = TimeSpan.FromSeconds(2);
     private readonly int _maxRetryAttempts = 3;
 
     public async Task<List<WoningDto>> GetKoopwoningenVoorPlaatsAsync(string plaats)
     {
-        var apiKey = configuration["PartnerApiKey"] ?? throw new InvalidOperationException("PartnerApiKey");
-
-        return await ExecuteWithRetryPolicy(async () => await HaalKoopwoningenOp(plaats, apiKey));
+        return await ExecuteWithRetryPolicy(async () => await HaalKoopwoningenOp(plaats, withTuin: false));
     }
     
-    public Task<List<WoningDto>> GetKoopwoningenVoorPlaatsMetTuinAsync(string plaats)
+    public async Task<List<WoningDto>> GetKoopwoningenVoorPlaatsMetTuinAsync(string plaats)
     {
-        throw new NotImplementedException();
+        return await ExecuteWithRetryPolicy(async () => await HaalKoopwoningenOp(plaats, withTuin: true));
     }
 
-    private async Task<List<WoningDto>> HaalKoopwoningenOp(string plaats, string apiKey, string tuin = null)
+    private async Task<List<WoningDto>> HaalKoopwoningenOp(string plaats, bool withTuin)
     {
         var allWoningen = new List<WoningDto>();
         var currentPage = 1;
@@ -35,8 +38,9 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguratio
 
         do
         {
-            var jsonResponse =
-                await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync(apiKey, plaats, currentPage, 50);
+            string jsonResponse = withTuin
+                ? await fundaPartnerApi.GetKoopwoningenVoorPlaatsMetTuinAsync(_apiKey, plaats, currentPage, 50)
+                : await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync(_apiKey, plaats, currentPage, 50);
 
             response = JsonConvert.DeserializeObject<KoopwoningenResponse>(jsonResponse);
 
@@ -58,6 +62,7 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguratio
         var delay = _initialRetryDelay;
 
         while (attempt < _maxRetryAttempts)
+        {
             try
             {
                 return await action();
@@ -67,7 +72,7 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguratio
                 attempt++;
                 if (attempt >= _maxRetryAttempts) throw;
 
-                logger.LogWarning("Rate limit hit. Waiting for {delay} seconds before retrying...", delay.TotalSeconds );
+                logger.LogWarning("Rate limit hit. Waiting for {delay} seconds before retrying...", delay.TotalSeconds);
 
                 await Task.Delay(delay);
                 delay = TimeSpan.FromSeconds(delay.TotalSeconds * 2);
@@ -82,6 +87,7 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguratio
                 logger.LogError("Unexpected error: {Message}", ex.Message);
                 throw;
             }
+        }
 
         throw new InvalidOperationException("Maximum retry attempts exceeded.");
     }

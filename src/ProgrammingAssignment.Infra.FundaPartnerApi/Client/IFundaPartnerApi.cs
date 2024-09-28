@@ -7,8 +7,8 @@ namespace ProgrammingAssignment.Infra.FundaPartnerApi.Client
     {
         [Get("/{apiKey}/?type=koop&zo=/{plaats}&page={page}&pagesize={pagesize}")]
         Task<string> GetKoopwoningenVoorPlaatsAsync(string apiKey, string plaats, int page, int pagesize);
-
-        [Get("/{plaats}/tuin")]
-        Task<List<WoningDto>> GetKoopwoningenVoorPlaatsMetTuinAsync(string plaats);
+        
+        [Get("/{apiKey}/?type=koop&zo=/{plaats}/tuin/&page={page}&pagesize={pagesize}")]
+        Task<string> GetKoopwoningenVoorPlaatsMetTuinAsync(string apiKey, string plaats, int page, int pagesize);
     }
 }
