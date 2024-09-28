@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ProgrammingAssignment.Infra.FundaPartnerApi\ProgrammingAssignment.Infra.FundaPartnerApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AutoFixture">
+      <HintPath>..\..\..\..\..\.nuget\packages\autofixture\4.18.1\lib\netstandard2.0\AutoFixture.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.TestRunner.Adapters.XUnit">
+      <HintPath>..\..\..\..\..\..\..\Program Files\JetBrains\Rider\r2r\2024.2.5R\D5E2D148F1E9CFE33A1346DA0469535\TestRunner\Adapters\XUnit\netstandard2.0\JetBrains.ReSharper.TestRunner.Adapters.XUnit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Core" />
+  </ItemGroup>
+
+</Project>
