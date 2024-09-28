@@ -31,7 +31,7 @@ public class MakelaarService(IMakelaarRepository makelaarRepository, IKoopwoning
             .Take(10)
             .ToList();
 
-        _logger.LogInformation("Start wegschrijven van topmakelaatlijst {lijst}", topMakelaarList);
+        _logger.LogInformation("Start wegschrijven van topmakelaarlijst {lijst}", topMakelaarList);
         await _makelaarRepository.SaveMakelaarTopListAsync(topMakelaarList);
 
         return topMakelaarList;

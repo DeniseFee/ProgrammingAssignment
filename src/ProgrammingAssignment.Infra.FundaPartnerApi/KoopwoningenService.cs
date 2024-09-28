@@ -47,7 +47,7 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi, IConfiguratio
             }
 
             currentPage++;
-        } while (response != null && currentPage <= response.Paging.AantalPaginas);
+        } while (response != null && currentPage <= response.Paging?.AantalPaginas);
 
         return allWoningen;
     }
