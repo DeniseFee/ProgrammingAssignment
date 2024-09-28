@@ -22,7 +22,7 @@ namespace ProgrammingAssignment.Api.Tests.Unit
         public async void ProcessMakelaarsTopListAsync_WithValidList_ReturnsOkResult()
         {
             // Arrange
-            var makelaarDtoList = new List<Makelaar>
+            var makelaarDtoList = new List<MakelaarDto>
             {
                 new() { FundaId = 1, Naam= "Makelaar1" },
                 new() { FundaId = 2, Naam = "Makelaar2" }
@@ -43,7 +43,7 @@ namespace ProgrammingAssignment.Api.Tests.Unit
         public async Task ProcessMakelaarsTopListAsync_WithNullTopList_ReturnsOkResult()
         {
             // Arrange
-            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult<List<Makelaar>>(null));
+            _makelaarService.ProcessMakelaarsTopListAsync(Arg.Any<string>()).Returns(Task.FromResult<List<MakelaarDto>>(null));
 
             // Act
             var result = await _controller.ProcessMakelaarsTopListAsync(Arg.Any<string>());

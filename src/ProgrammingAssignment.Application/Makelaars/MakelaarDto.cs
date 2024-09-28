@@ -2,7 +2,7 @@
 
 public class MakelaarDto
 {
-    public int FundaId { get; set; }
-    public string Naam { get; set; }
-    public int AantalWoningen { get; set; }
+    public int FundaId { get; init; }
+    public string? Naam { get; init; }
+    public int AantalWoningen { get; init; }
 }

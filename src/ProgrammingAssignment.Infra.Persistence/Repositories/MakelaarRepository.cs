@@ -1,15 +1,17 @@
-﻿using ProgrammingAssignment.Domain.Makelaar;
+﻿using Microsoft.Extensions.Logging;
+using ProgrammingAssignment.Domain.Makelaar;
 
 namespace ProgrammingAssignment.Infra.Persistence.Repositories;
-internal class MakelaarRepository(ProgrammingAssignmentContext context) : IMakelaarRepository
-{
-    private readonly ProgrammingAssignmentContext _context = context;
 
+internal class MakelaarRepository(ProgrammingAssignmentContext context, ILogger<MakelaarRepository> logger)
+    : IMakelaarRepository
+{
     public async Task SaveMakelaarTopListAsync(List<Makelaar> makelaars)
     {
-        _context.Makelaars.RemoveRange(_context.Makelaars);
+        logger.LogInformation("Start wegschrijven van topmakelaarlijst {Lijst}", makelaars);
+        context.Makelaars.RemoveRange(context.Makelaars);
 
-        await _context.Makelaars.AddRangeAsync(makelaars);
-        await _context.SaveChangesAsync();
+        await context.Makelaars.AddRangeAsync(makelaars);
+        await context.SaveChangesAsync();
     }
 }

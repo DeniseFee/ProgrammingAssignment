@@ -1,27 +1,35 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using ProgrammingAssignment.Application.Woningen;
 using ProgrammingAssignment.Domain.Makelaar;
 
 namespace ProgrammingAssignment.Application.Makelaars;
 
-public class MakelaarService(IMakelaarRepository makelaarRepository, IKoopwoningenService fundaWoningenService, ILogger<MakelaarService> logger) : IMakelaarService
+public class MakelaarService(
+    IMakelaarRepository makelaarRepository,
+    IKoopwoningenService fundaWoningenService,
+    IMapper mapper,
+    ILogger<MakelaarService> logger) : IMakelaarService
 {
-    private IMakelaarRepository _makelaarRepository { get; set; } = makelaarRepository;
-    private IKoopwoningenService _fundaWoningenService { get; set; } = fundaWoningenService;
-    private ILogger<MakelaarService> _logger { get; set; } = logger;
-
-    public async Task<List<Makelaar>> ProcessMakelaarsTopListAsync(string plaats)
+    public async Task<List<MakelaarDto>> ProcessMakelaarsTopListAsync(string plaats)
     {
-        _logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats {Plaats}", plaats);
+        logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats {Plaats}", plaats);
 
-        var woningen = await _fundaWoningenService.GetKoopwoningenVoorPlaatsAsync(plaats);
-        //todo: verder specificeren woningen voordat de call gedaan gaat worden naar API
-        var teKoopWoningen = woningen.Where(w => w.IsTeKoop).ToList();
+        var alleWoningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsAsync(plaats);
+        var teKoopWoningen = alleWoningen.Where(w => w.IsTeKoop);
 
-        _logger.LogInformation("{WoningenAantal} woningen sorteren per makelaar", teKoopWoningen.Count);
-        var topMakelaarList = teKoopWoningen
+        var topMakelaarList = GetTopMakelaarLijst(teKoopWoningen);
+
+        await makelaarRepository.SaveMakelaarTopListAsync(mapper.Map<List<Makelaar>>(topMakelaarList));
+
+        return topMakelaarList;
+    }
+
+    private static List<MakelaarDto> GetTopMakelaarLijst(IEnumerable<WoningDto> teKoopWoningen)
+    {
+        return teKoopWoningen
             .GroupBy(w => new { w.MakelaarFundaId, w.MakelaarNaam })
-            .Select(g => new Makelaar
+            .Select(g => new MakelaarDto
             {
                 FundaId = g.Key.MakelaarFundaId,
                 Naam = g.Key.MakelaarNaam,
@@ -30,10 +38,5 @@ public class MakelaarService(IMakelaarRepository makelaarRepository, IKoopwoning
             .OrderByDescending(m => m.AantalWoningen)
             .Take(10)
             .ToList();
-
-        _logger.LogInformation("Start wegschrijven van topmakelaarlijst {lijst}", topMakelaarList);
-        await _makelaarRepository.SaveMakelaarTopListAsync(topMakelaarList);
-
-        return topMakelaarList;
     }
 }

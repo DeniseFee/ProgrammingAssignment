@@ -7,7 +7,8 @@ namespace ProgrammingAssignment.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            return services.AddScoped<IMakelaarService, MakelaarService>();
+            return services.AddScoped<IMakelaarService, MakelaarService>()
+                .AddAutoMapper(typeof(MakelaarMappingProfile));
         }
     }
 }

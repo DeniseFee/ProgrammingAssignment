@@ -1,9 +1,8 @@
-﻿namespace ProgrammingAssignment.Application.Woningen; 
+﻿namespace ProgrammingAssignment.Application.Woningen;
 
 public class WoningDto
 {
-
-    public bool IsTeKoop { get; set; }
-    public int MakelaarFundaId { get; set; }
-    public string MakelaarNaam { get; set; }
+    public bool IsTeKoop { get; init; }
+    public int MakelaarFundaId { get; init; }
+    public string? MakelaarNaam { get; init; }
 }
