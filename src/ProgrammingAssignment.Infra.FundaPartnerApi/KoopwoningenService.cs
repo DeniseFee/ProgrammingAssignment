@@ -9,7 +9,7 @@ public class KoopwoningenService(IFundaPartnerApi fundaPartnerApi) : IKoopwoning
     {
         try
         {
-            return await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync("Amsterdam");
+            return await fundaPartnerApi.GetKoopwoningenVoorPlaatsAsync(plaats);
         }
         catch (ApiException ex)
         {

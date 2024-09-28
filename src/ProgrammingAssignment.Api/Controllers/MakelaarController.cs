@@ -8,12 +8,12 @@ namespace ProgrammingAssignment.Api.Controllers
     public class MakelaarController(IMakelaarService makelaarService) : ControllerBase
     {
 
-        [HttpPost(Name = "ProcessMakelaarsTopList")]
-        public async Task<IActionResult> ProcessMakelaarsTopListAsync()
+        [HttpPost("{plaats}")]
+        public async Task<IActionResult> ProcessMakelaarsTopListAsync(string plaats)
         {
             try
             {
-                var topList = await makelaarService.ProcessMakelaarsTopListAsync();
+                var topList = await makelaarService.ProcessMakelaarsTopListAsync(plaats);
                 return Ok(topList);
             }
             catch (Exception ex)

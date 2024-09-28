@@ -4,5 +4,5 @@ namespace ProgrammingAssignment.Application.Makelaars;
 
 public interface IMakelaarService
 {
-    public Task<List<Makelaar>> ProcessMakelaarsTopListAsync();
+    public Task<List<Makelaar>> ProcessMakelaarsTopListAsync(string plaats);
 }
