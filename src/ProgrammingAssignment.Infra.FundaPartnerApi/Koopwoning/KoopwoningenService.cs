@@ -7,7 +7,7 @@ using ProgrammingAssignment.Application.Woningen;
 using ProgrammingAssignment.Infra.FundaPartnerApi.Client;
 using Refit;
 
-namespace ProgrammingAssignment.Infra.FundaPartnerApi;
+namespace ProgrammingAssignment.Infra.FundaPartnerApi.Koopwoning;
 
 public class KoopwoningenService(
     IFundaPartnerApi fundaPartnerApi,

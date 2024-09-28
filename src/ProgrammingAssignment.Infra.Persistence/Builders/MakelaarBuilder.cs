@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProgrammingAssignment.Domain.Makelaar;
 
-namespace ProgrammingAssignment.Infra.Persistence.Builders
+namespace ProgrammingAssignment.Infra.Persistence.Builders;
+
+internal class MakelaarBuilder : IEntityTypeConfiguration<Makelaar>
 {
-    internal class MakelaarBuilder : IEntityTypeConfiguration<Makelaar>
+    public void Configure(EntityTypeBuilder<Makelaar> builder)
     {
-        public void Configure(EntityTypeBuilder<Makelaar> builder)
-        {
-            builder.HasKey(u => u.Id);
-        }
+        builder.HasKey(u => u.Id);
     }
 }

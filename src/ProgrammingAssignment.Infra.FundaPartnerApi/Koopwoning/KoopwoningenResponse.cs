@@ -1,4 +1,4 @@
-﻿namespace ProgrammingAssignment.Infra.FundaPartnerApi;
+﻿namespace ProgrammingAssignment.Infra.FundaPartnerApi.Koopwoning;
 
 public class KoopwoningenResponse
 {
