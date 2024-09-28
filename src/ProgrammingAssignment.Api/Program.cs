@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddFundaPartnerApiServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
