@@ -3,14 +3,14 @@ using ProgrammingAssignment.Domain.Makelaar;
 
 namespace ProgrammingAssignment.Application.Makelaars;
 
-public class MakelaarService(IMakelaarRepository makelaarRepository, IFundaWoningenService fundaWoningenService) : IMakelaarService
+public class MakelaarService(IMakelaarRepository makelaarRepository, IKoopwoningenService fundaWoningenService) : IMakelaarService
 {
     private IMakelaarRepository _makelaarRepository { get; set; } = makelaarRepository;
-    private IFundaWoningenService _fundaWoningenService { get; set; } = fundaWoningenService;
+    private IKoopwoningenService _fundaWoningenService { get; set; } = fundaWoningenService;
 
     public async Task<List<Makelaar>> ProcessMakelaarsTopListAsync()
     {
-        var woningen = _fundaWoningenService.GetWoningenAsync();
+        var woningen = await _fundaWoningenService.GetKoopwoningenVoorPlaatsAsync("Amsterdam");
         //todo: verder specificeren woningen voordat de call gedaan gaat worden naar API
         var teKoopWoningen = woningen.Where(w => w.IsTeKoop).ToList();
 
