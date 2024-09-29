@@ -9,4 +9,5 @@ public class Makelaar
     public int FundaId { get; init; }
     public string? Naam { get; set; }
     public int AantalWoningen { get; init; }
+    public MakelaarToplijstType TopLijstType{ get; init; }
 }

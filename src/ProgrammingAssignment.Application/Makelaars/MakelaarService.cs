@@ -16,7 +16,24 @@ public class MakelaarService(
         logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats {Plaats}", plaats);
 
         var woningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsAsync(plaats);
-        return await ProcessTopListAsync(woningen);
+        var teKoopWoningen = woningen.Where(w => w.IsTeKoop);
+
+        var topMakelaarList = teKoopWoningen
+            .GroupBy(w => new { w.MakelaarFundaId, w.MakelaarNaam })
+            .Select(g => new MakelaarDto
+            {
+                FundaId = g.Key.MakelaarFundaId,
+                Naam = g.Key.MakelaarNaam,
+                AantalWoningen = g.Count(),
+                ToplijstType = MakelaarToplijstType.ZonderTuin
+            })
+            .OrderByDescending(m => m.AantalWoningen)
+            .Take(10)
+            .ToList();
+
+        await makelaarRepository.SaveMakelaarTopListAsync(mapper.Map<List<Makelaar>>(topMakelaarList));
+
+        return topMakelaarList;
     }
     
     public async Task<List<MakelaarDto>> ProcessMakelaarsTopListWithTuinAsync(string plaats)
@@ -24,32 +41,23 @@ public class MakelaarService(
         logger.LogInformation("Start met verwerken van top makelaarslijst voor plaats met tuin {Plaats}", plaats);
 
         var woningen = await fundaWoningenService.GetKoopwoningenVoorPlaatsMetTuinAsync(plaats);
-        return await ProcessTopListAsync(woningen);
-    }
-
-    private async Task<List<MakelaarDto>> ProcessTopListAsync(List<WoningDto> woningen)
-    {
         var teKoopWoningen = woningen.Where(w => w.IsTeKoop);
 
-        var topMakelaarList = GetTopMakelaarLijst(teKoopWoningen);
-
-        await makelaarRepository.SaveMakelaarTopListAsync(mapper.Map<List<Makelaar>>(topMakelaarList));
-
-        return topMakelaarList;
-    }
-
-    private static List<MakelaarDto> GetTopMakelaarLijst(IEnumerable<WoningDto> teKoopWoningen)
-    {
-        return teKoopWoningen
+        var topMakelaarList = teKoopWoningen
             .GroupBy(w => new { w.MakelaarFundaId, w.MakelaarNaam })
             .Select(g => new MakelaarDto
             {
                 FundaId = g.Key.MakelaarFundaId,
                 Naam = g.Key.MakelaarNaam,
-                AantalWoningen = g.Count()
+                AantalWoningen = g.Count(),
+                ToplijstType = MakelaarToplijstType.MetTuin
             })
             .OrderByDescending(m => m.AantalWoningen)
             .Take(10)
             .ToList();
+
+        await makelaarRepository.SaveMakelaarTopListAsync(mapper.Map<List<Makelaar>>(topMakelaarList));
+
+        return topMakelaarList;
     }
 }
