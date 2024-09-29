@@ -34,6 +34,35 @@ Belangrijke gebruikte bibliotheken en tools:
 - Funda Partner API Key
 - SQL Server
 
+
+### Stappen
+1. **Clone het project:**
+    ```bash
+    git clone https://github.com/jouw-gebruikersnaam/funda-makelaars-api.git
+    ```
+2. **Ga naar de projectdirectory:**
+    ```bash
+    cd funda-makelaars-api
+    ```
+3. **Installeer de dependencies:**
+   Het project maakt gebruik van `NuGet` voor dependency management. Open het project in Visual Studio of voer het volgende commando uit in de terminal:
+    ```bash
+    dotnet restore
+    ```
+
+4. **Build het project:**
+    ```bash
+    dotnet build
+    ```
+5. **Start een SQL Server container**
+   ```shell
+    docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Geheim!123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+   ```
+6. **Instantiëer de database**
+   ```shell
+   dotnet ef database update --project src\ProgrammingAssignment.Api
+   ```
+7. **Run de applicatie via IIS Express**
 ## **Configuratie**
 Vervang in Appsettings.json YOUR_APIKEY_HERE met jouw Api key
 
