@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgrammingAssignment.Api", "src\ProgrammingAssignment.Api\ProgrammingAssignment.Api.csproj", "{A2B84F5E-E07F-441A-8EAB-9795208709AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1ABB720B-9257-4033-9B41-0BD2F7DA753C}"
+	ProjectSection(SolutionItems) = preProject
+		README.MD = README.MD
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgrammingAssignment.Infra.Persistence", "src\ProgrammingAssignment.Infra.Persistence\ProgrammingAssignment.Infra.Persistence.csproj", "{53CA7FB7-6532-4BF2-B179-BD536184A318}"
 EndProject
